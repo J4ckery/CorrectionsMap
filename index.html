@@ -2,59 +2,72 @@
 <html>
 <head>
     <title>NZ Prisons Map</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEI_LPNLATOwkBesV0zKDyQe6eKG1E0vM&libraries=geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEI_LPNLATOwkBesV0zKDyQe6eKG1E0vM&callback=initMap&libraries=geometry" async defer></script>
     <script>
         function initMap() {
+            const prisons = [
+                { name: "Northland Region Corrections Facility", lat: -35.3393, lng: 173.8213 },
+                { name: "Auckland Prison", lat: -36.7333, lng: 174.6931 },
+                { name: "Mt Eden Corrections Facility", lat: -36.8667, lng: 174.7645 },
+                { name: "Te Piriti - Special Treatment Unit at Auckland Prison", lat: -36.7333, lng: 174.6931 },
+                { name: "Auckland Region Women's Corrections Facility", lat: -37.0021, lng: 174.8870 },
+                { name: "Auckland South Corrections Facility", lat: -37.0050, lng: 174.8795 },
+                { name: "Waikeria Prison", lat: -38.1875, lng: 175.3981 },
+                { name: "Spring Hill Corrections Facility", lat: -37.4833, lng: 175.1539 },
+                { name: "Tongariro Prison", lat: -39.0117, lng: 175.7604 },
+                { name: "Hawke's Bay Regional Prison", lat: -39.5323, lng: 176.7963 },
+                { name: "Manawatū Prison", lat: -40.3854, lng: 175.5992 },
+                { name: "New Plymouth Remand Centre", lat: -39.0556, lng: 174.0742 },
+                { name: "Whanganui Prison", lat: -39.9173, lng: 175.0767 },
+                { name: "Arohata Prison", lat: -41.2031, lng: 174.8102 },
+                { name: "Rimutaka Prison", lat: -41.1389, lng: 175.0511 },
+                { name: "Christchurch Men's Prison", lat: -43.5053, lng: 172.5252 },
+                { name: "Christchurch Women's Prison", lat: -43.5063, lng: 172.5240 },
+                { name: "Rolleston Prison", lat: -43.5850, lng: 172.3969 },
+                { name: "Invercargill Prison", lat: -46.4131, lng: 168.3662 },
+                { name: "Otago Corrections Facility", lat: -46.1016, lng: 169.9781 }
+            ];
+
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -40.9006, lng: 174.8860 },
                 zoom: 6,
             });
 
-            const locations = [
-                { name: "Northland Region Corrections Facility", lat: -35.401, lng: 173.822 },
-                { name: "Auckland Prison", lat: -36.726, lng: 174.712 },
-                { name: "Mt Eden Corrections Facility", lat: -36.866, lng: 174.764 },
-                { name: "Auckland Region Women's Corrections Facility", lat: -37.002, lng: 174.886 },
-                { name: "Auckland South Corrections Facility", lat: -37.021, lng: 174.884 },
-                { name: "Waikeria Prison", lat: -38.183, lng: 175.366 },
-                { name: "Spring Hill Corrections Facility", lat: -37.435, lng: 175.013 },
-                { name: "Tongariro Prison", lat: -39.002, lng: 175.764 },
-                { name: "Hawke's Bay Regional Prison", lat: -39.601, lng: 176.865 },
-                { name: "Manawatū Prison", lat: -40.375, lng: 175.603 },
-                { name: "New Plymouth Remand Centre", lat: -39.058, lng: 174.075 },
-                { name: "Whanganui Prison", lat: -39.935, lng: 175.020 },
-                { name: "Arohata Prison", lat: -41.198, lng: 174.814 },
-                { name: "Rimutaka Prison", lat: -41.142, lng: 175.050 },
-                { name: "Christchurch Men's Prison", lat: -43.537, lng: 172.515 },
-                { name: "Christchurch Women's Prison", lat: -43.540, lng: 172.512 },
-                { name: "Rolleston Prison", lat: -43.594, lng: 172.386 },
-                { name: "Invercargill Prison", lat: -46.409, lng: 168.365 },
-                { name: "Otago Corrections Facility", lat: -46.120, lng: 169.972 }
-            ];
-
-            locations.forEach(loc => {
-                new google.maps.Marker({
+            prisons.forEach(loc => {
+                // Add marker
+                const marker = new google.maps.Marker({
                     position: { lat: loc.lat, lng: loc.lng },
-                    map,
+                    map: map,
                     title: loc.name
                 });
 
+                // Info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${loc.name}</strong>`
+                });
+
+                // Click event for markers
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+
+                // Draw hiring perimeter (20km circle) with reduced opacity to prevent overlap effects
                 new google.maps.Circle({
                     strokeColor: "#FF0000",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
+                    strokeOpacity: 0.5,  // Less intense border
+                    strokeWeight: 1,    // Thin stroke
                     fillColor: "#FF0000",
-                    fillOpacity: 0.35,
+                    fillOpacity: 0.1,    // Low opacity to prevent overlap intensity
                     map,
                     center: { lat: loc.lat, lng: loc.lng },
-                    radius: 80000  // Approximate hiring radius (20km)
+                    radius: 80000, // 20 km
                 });
             });
         }
     </script>
 </head>
-<body onload="initMap()">
+<body>
     <h2>New Zealand Prisons Map</h2>
-    <div id="map" style="height: 90vh; width: 100%;"></div>
+    <div id="map" style="width: 100%; height: 90vh;"></div>
 </body>
 </html>
